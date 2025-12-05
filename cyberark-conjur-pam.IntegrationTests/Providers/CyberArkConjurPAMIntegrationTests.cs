@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace cyberark_conjur_pam.IntegrationTests.Providers;
 
+[Trait("Category", "Integration")]
 public class CyberArkConjurPAMIntegrationTests
 {
     [Fact]

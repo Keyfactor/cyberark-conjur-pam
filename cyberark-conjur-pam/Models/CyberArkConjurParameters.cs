@@ -59,7 +59,7 @@ internal class CyberArkConjurParameters
         if (!dict.ContainsKey(key)
             || string.IsNullOrWhiteSpace(dict[key]))
         {
-            string error = $"Required field {key} was missing a value or was not defined as expected in dictionary.";
+            string error = $"Required field {key} is missing a value or was not defined as expected in dictionary.";
             throw new ArgumentException(error);
         }
         return dict[key];
