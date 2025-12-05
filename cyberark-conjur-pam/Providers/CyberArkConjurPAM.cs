@@ -1,4 +1,5 @@
 using Conjur;
+using cyberark_conjur_pam.Models;
 using Keyfactor.Logging;
 using Keyfactor.Platform.Extensions;
 using Microsoft.Extensions.Logging;
@@ -10,17 +11,11 @@ public class CyberArkConjurPAM: IPAMProvider
 {
     public string Name => "CyberArk-Conjur";
 
-    private readonly ILogger _logger;
-
-    public CyberArkConjurPAM()
-    {
-        _logger = LogHandler.GetClassLogger<CyberArkConjurPAM>();
-    }
-    
+    private readonly ILogger _logger = LogHandler.GetClassLogger<CyberArkConjurPAM>();
     
     public string GetPassword(Dictionary<string, string> instanceParameters, Dictionary<string, string> initializationInfo)
     {
-        var parameters = GetCyberArkConjurParameters(instanceParameters, initializationInfo);
+        var parameters = CyberArkConjurParameters.Build(_logger, instanceParameters, initializationInfo);
 
         var client = new Client(parameters.ConjurUrl, parameters.AccountId);
 
@@ -29,73 +24,31 @@ public class CyberArkConjurPAM: IPAMProvider
             .GetResult();
     }
 
-    private CyberArkConjurParameters GetCyberArkConjurParameters(Dictionary<string, string> instanceParameters,
-        Dictionary<string, string> initializationInfo)
+    private async Task<string> GetVariableFromConjur(Client client, CyberArkConjurParameters parameters)
     {
         try
         {
-            string conjurUrl = GetRequiredValue(initializationInfo, "ConjurUrl");
-            string accountId = GetRequiredValue(initializationInfo, "AccountId");
-            string login = GetRequiredValue(initializationInfo, "Login");
-            string apiKey = GetRequiredValue(initializationInfo, "ApiKey");
+            _logger.LogDebug($"Authenticating login {parameters.Login} to Conjur...");
             
-            string variablePath = GetRequiredValue(instanceParameters, "VariablePath");
-
-            var parameters = new CyberArkConjurParameters()
-            {
-                ConjurUrl = conjurUrl,
-                AccountId = accountId,
-                Login = login,
-                ApiKey = apiKey,
-
-                VariablePath = variablePath
-            };
+            await client.LogInAsync(parameters.Login, parameters.ApiKey);
             
-            _logger.LogDebug($"Conjur PAM properties received: {JsonConvert.SerializeObject(parameters)}");
-
-            return parameters;
+            _logger.LogDebug($"Successfully authenticated login {parameters.Login} to Conjur.");
         }
         catch (Exception ex)
         {
-            _logger.LogError("An error occurred trtying to access PAM parameters");
-            _logger.LogError(ex.Message);
+            _logger.LogError("An error occurred during Conjur authentication: " + ex.Message);
             throw;
         }
-    }
-
-    private async Task<string> GetVariableFromConjur(Client client, CyberArkConjurParameters parameters)
-    {
-        await client.LogInAsync(parameters.Login, parameters.ApiKey);
         
+        _logger.LogDebug($"Retrieving variable {parameters.VariablePath} from Conjur...");
+
         var secretVariable = client.Variable(parameters.VariablePath);
         var secretValue = await secretVariable.GetValueAsync();
+        
+        _logger.LogDebug($"Successfully retrieved variable {parameters.VariablePath} from Conjur.");
         
         return secretValue ?? "";
     }
     
-    protected string GetRequiredValue(Dictionary<string, string> dict, string key)
-    {
-        if (!dict.ContainsKey(key)
-            || string.IsNullOrWhiteSpace(dict[key]))
-        {
-            string error = $"Required field {key} was missing a value or was not defined as expected in dictionary.";
-            throw new ArgumentException(error);
-        }
-        return dict[key];
-    }
-}
-
-internal class CyberArkConjurParameters
-{
-    public string ConjurUrl { get; set; }
-    public string AccountId { get; set; }
-    public string Login { get; set; }
-    public string VariablePath { get; set; }
     
-    [JsonProperty("api_key")]
-    public string ApiKeyMasked => "*****";
-    
-    // Mask this field from being serialized in logs or output
-    [JsonIgnore]
-    public string ApiKey { get; set; }
 }
