@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cyberark-conjur-pam", "cyberark-conjur-pam\cyberark-conjur-pam.csproj", "{851E0C7C-0B56-4B19-83A0-3B8603B835F1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{DECFBF3D-6ACA-4960-9D0F-100CE16B004E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cyberark-conjur-pam.IntegrationTests", "cyberark-conjur-pam.IntegrationTests\cyberark-conjur-pam.IntegrationTests.csproj", "{C180A2C3-45DD-47A0-8819-A79868CED0DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{851E0C7C-0B56-4B19-83A0-3B8603B835F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{851E0C7C-0B56-4B19-83A0-3B8603B835F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{851E0C7C-0B56-4B19-83A0-3B8603B835F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{851E0C7C-0B56-4B19-83A0-3B8603B835F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C180A2C3-45DD-47A0-8819-A79868CED0DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C180A2C3-45DD-47A0-8819-A79868CED0DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C180A2C3-45DD-47A0-8819-A79868CED0DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C180A2C3-45DD-47A0-8819-A79868CED0DD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C180A2C3-45DD-47A0-8819-A79868CED0DD} = {DECFBF3D-6ACA-4960-9D0F-100CE16B004E}
+	EndGlobalSection
+EndGlobal
