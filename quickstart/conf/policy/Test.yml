@@ -4,7 +4,7 @@
   body:
     # Define a human user, a non-human identity that represents an application, and a secret
     - !user TestUser
-    - !host myDemoApp
+    # - !host myDemoApp
     - !variable MyTestVar
 
     # Give permission to the human user to read and execute the secret
@@ -13,20 +13,8 @@
       privileges: [ read, execute ]
       resource: !variable MyTestVar
 
-    # Give permissions to the non-human identity to read and execute the secret the secret.
-    - !permit
-      role: !host myDemoApp
-      privileges: [ read, execute ]
-      resource: !variable MyTestVar
-    
-    # # Create a host identity (for API key auth)
-    # - !host
-    #   id: TestUser@TestBot
-    #   annotations:
-    #     description: Test user for integration testing
-    
-    # # Grant read and execute permissions to the host
+    # # Give permissions to the non-human identity to read and execute the secret the secret.
     # - !permit
-    #   role: !host TestUser@TestBot
+    #   role: !host myDemoApp
     #   privileges: [ read, execute ]
     #   resource: !variable MyTestVar
