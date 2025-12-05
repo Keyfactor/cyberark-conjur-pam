@@ -1,0 +1,74 @@
+# This docker-compose file sets up a local Conjur OSS server with a Postgres backend
+# and a Conjur CLI container to initialize the server with a test account and admin user.
+# Only for development and testing purposes. Do not use in production.
+
+
+services:
+  
+  conjur:
+    image: cyberark/conjur
+    container_name: conjur-oss
+    command: server
+    environment:
+      DATABASE_URL: postgres://postgres@postgres/postgres
+      CONJUR_DATA_KEY: "W0BhlISy0z14grAieW/swpWyaFIutWQTmZbI0wjuKLM="
+      RAILS_ENV: development
+    ports:
+      - "8080:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - conjur-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: conjur-postgres
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: postgres
+    networks:
+      - conjur-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    # Use tmpfs for truly ephemeral storage (data only exists in RAM)
+    tmpfs:
+      - /var/lib/postgresql/data
+    # Uncomment below to persist data between runs (comment out for ephemeral)
+    # volumes:
+    #   - postgres-data:/var/lib/postgresql/data
+
+  conjur-init:
+    image: docker:24-cli
+    container_name: conjur-init
+    entrypoint: /scripts/init-conjur.sh
+    environment:
+      CONJUR_ACCOUNT: testConjurAccount
+      CONJUR_APPLIANCE_URL: http://conjur
+      CONJUR_USER_PASSWORD: "Mypassw0rD2!"
+      CONJUR_SECRET_VALUE: MyTestSecretValue123
+    depends_on:
+      conjur:
+        condition: service_healthy
+    volumes:
+      - ./conf/policy:/policy:ro
+      - ./scripts:/scripts:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - conjur-network
+
+networks:
+  conjur-network:
+    driver: bridge
+
+# Uncomment below to persist data between runs (comment out for ephemeral)
+# volumes:
+#   postgres-data:
