@@ -49,7 +49,7 @@ public class CyberArkConjurPAMTests
         Assert.True(initializationInfo.Remove(fieldToRemove));
         
         // Act
-        var exception = Assert.Throws<ArgumentException>(() => _sut.GetPassword(instanceParameters, initializationInfo));
+        var exception = Assert.Throws<ConjurPamArgumentException>(() => _sut.GetPassword(instanceParameters, initializationInfo));
         
         // Assert
         Assert.Equal($"Required field {fieldToRemove} is missing a value or was not defined as expected in dictionary.", exception.Message);
@@ -66,7 +66,7 @@ public class CyberArkConjurPAMTests
         Assert.True(instanceParameters.Remove(fieldToRemove));
         
         // Act
-        var exception = Assert.Throws<ArgumentException>(() => _sut.GetPassword(instanceParameters, initializationInfo));
+        var exception = Assert.Throws<ConjurPamArgumentException>(() => _sut.GetPassword(instanceParameters, initializationInfo));
         
         // Assert
         Assert.Equal($"Required field {fieldToRemove} is missing a value or was not defined as expected in dictionary.", exception.Message);

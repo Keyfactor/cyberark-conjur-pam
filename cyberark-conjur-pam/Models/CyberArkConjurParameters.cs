@@ -1,3 +1,4 @@
+using cyberark_conjur_pam.Exceptions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -49,7 +50,7 @@ internal class CyberArkConjurParameters
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occurred trying to access PAM parameters: {ex.Message}");
+            logger.LogError($"An error occurred trying to retrieve PAM parameters: {ex.Message}");
             throw;
         }
     }
@@ -59,8 +60,7 @@ internal class CyberArkConjurParameters
         if (!dict.ContainsKey(key)
             || string.IsNullOrWhiteSpace(dict[key]))
         {
-            string error = $"Required field {key} is missing a value or was not defined as expected in dictionary.";
-            throw new ArgumentException(error);
+            throw new ConjurPamArgumentException(key);
         }
         return dict[key];
     }
