@@ -30,20 +30,36 @@ public class CyberArkConjurPAM: IPAMProvider
     
     public string GetPassword(Dictionary<string, string> instanceParameters, Dictionary<string, string> initializationInfo)
     {
+        _logger.MethodEntry();
+        
         var parameters = CyberArkConjurParameters.Build(_logger, instanceParameters, initializationInfo);
 
         _conjurClient ??= new ConjurClient(parameters.ConjurUrl, parameters.AccountId);
 
-        return GetVariableFromConjur(_conjurClient, parameters)
+        var variable = GetVariableFromConjur(_conjurClient, parameters)
             .GetAwaiter()
             .GetResult();
+
+        _logger.MethodExit();
+
+        return variable;
     }
 
+    /// <summary>
+    /// Authenticates and retrieves the desired variable from Conjur
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="parameters"></param>
+    /// <returns>The secret value for the Conjur variable</returns>
+    /// <exception cref="ConjurLoginException">Thrown when authentication with Conjur fails</exception>
+    /// <exception cref="ConjurResourceAccessException">Thrown when the login identity does not have access to the Conjur variable</exception>
     private async Task<string> GetVariableFromConjur(IConjurClient client, CyberArkConjurParameters parameters)
     {
+        _logger.MethodEntry();
+        
         try
         {
-            _logger.LogDebug($"Authenticating login {parameters.Login} to Conjur...");
+            _logger.LogTrace($"Authenticating login {parameters.Login} to Conjur...");
             
             await client.LogInAsync(parameters.Login, parameters.ApiKey);
             
@@ -55,7 +71,7 @@ public class CyberArkConjurPAM: IPAMProvider
             throw new ConjurLoginException(ex);
         }
         
-        _logger.LogDebug($"Retrieving variable {parameters.VariablePath} from Conjur...");
+        _logger.LogTrace($"Retrieving variable {parameters.VariablePath} from Conjur...");
 
         string? secretValue;
 
@@ -68,6 +84,9 @@ public class CyberArkConjurPAM: IPAMProvider
             _logger.LogError("An error occurred while retrieving the variable from Conjur: " + ex.Message);
             throw new ConjurResourceAccessException(parameters.VariablePath, ex);
         }
+        
+        _logger.LogDebug($"Successfully retrieved variable {parameters.VariablePath} from Conjur.");
+        _logger.MethodExit();
         
         return secretValue ?? "";
     }

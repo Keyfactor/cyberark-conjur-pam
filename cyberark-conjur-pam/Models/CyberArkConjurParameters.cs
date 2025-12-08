@@ -1,4 +1,5 @@
 using cyberark_conjur_pam.Exceptions;
+using Keyfactor.Logging;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -18,20 +19,24 @@ internal class CyberArkConjurParameters
     [JsonProperty("api_key")]
     public string ApiKeyMasked => "*****";
     
-    // Mask this field from being serialized in logs or output
+    /// <summary>
+    /// API Key or Password can be used to authenticate the login.
+    /// </summary>
     [JsonIgnore]
     public required string ApiKey { get; set; }
 
     internal static CyberArkConjurParameters Build(ILogger logger, Dictionary<string, string> instanceParameters,
         Dictionary<string, string> initializationInfo)
     {
+        logger.MethodEntry();
+
         try
         {
             string conjurUrl = GetRequiredValue(initializationInfo, "ConjurUrl");
             string accountId = GetRequiredValue(initializationInfo, "AccountId");
             string login = GetRequiredValue(initializationInfo, "Login");
             string apiKey = GetRequiredValue(initializationInfo, "ApiKey");
-            
+
             string variablePath = GetRequiredValue(instanceParameters, "VariablePath");
 
             var parameters = new CyberArkConjurParameters()
@@ -43,7 +48,7 @@ internal class CyberArkConjurParameters
 
                 VariablePath = variablePath
             };
-            
+
             logger.LogDebug($"Conjur PAM properties received: {JsonConvert.SerializeObject(parameters)}");
 
             return parameters;
@@ -52,6 +57,10 @@ internal class CyberArkConjurParameters
         {
             logger.LogError($"An error occurred trying to retrieve PAM parameters: {ex.Message}");
             throw;
+        }
+        finally
+        {
+            logger.MethodExit();
         }
     }
     
