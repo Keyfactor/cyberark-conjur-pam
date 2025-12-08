@@ -51,9 +51,9 @@ services:
     container_name: conjur-init
     entrypoint: /scripts/init-conjur.sh
     environment:
-      CONJUR_ACCOUNT: testConjurAccount
-      CONJUR_APPLIANCE_URL: http://conjur
-      CONJUR_USER_PASSWORD: "Mypassw0rD2!"
+      CONJUR_ACCOUNT_ID: testConjurAccount
+      CONJUR_URL: http://conjur
+      CONJUR_PASSWORD: "Mypassw0rD2!"
       CONJUR_SECRET_VALUE: MyTestSecretValue123
     depends_on:
       conjur:

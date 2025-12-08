@@ -1,8 +1,10 @@
 using cyberark_conjur_pam.Clients;
 using cyberark_conjur_pam.Exceptions;
 using Keyfactor.Extensions.Pam.CyberArk.Conjur;
+using MartinCostello.Logging.XUnit;
 using Moq;
 using Xunit.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace cyberark_conjur_pam.UnitTests.Providers;
 
@@ -13,7 +15,10 @@ public class CyberArkConjurPAMTests
     
     public CyberArkConjurPAMTests(ITestOutputHelper output)
     {
-        var logger = new XunitLogger("", output);
+        var loggerFactory = LoggerFactory.Create(builder =>
+            builder.AddProvider(new XUnitLoggerProvider(output, new XUnitLoggerOptions()))
+                .SetMinimumLevel(LogLevel.Trace));
+        var logger = loggerFactory.CreateLogger<CyberArkConjurPAMTests>();
         _sut = new CyberArkConjurPAM(_mockConjurClient.Object, logger);
     }
     
