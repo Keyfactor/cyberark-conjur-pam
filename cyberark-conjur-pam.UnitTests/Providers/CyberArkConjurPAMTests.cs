@@ -1,6 +1,6 @@
 using cyberark_conjur_pam.Clients;
 using cyberark_conjur_pam.Exceptions;
-using Keyfactor.Extensions.Pam.CyberArk.Conjur;
+using Keyfactor.Extensions.Pam.CyberArk.Conjur.Providers;
 using MartinCostello.Logging.XUnit;
 using Moq;
 using Xunit.Abstractions;

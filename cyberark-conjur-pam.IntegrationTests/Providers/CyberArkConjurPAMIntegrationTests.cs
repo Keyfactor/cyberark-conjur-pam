@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Keyfactor.Extensions.Pam.CyberArk.Conjur.Providers;
 using MartinCostello.Logging.XUnit;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
@@ -23,7 +24,7 @@ public class CyberArkConjurPAMIntegrationTests
     public void GetPassword_ParametersAreValid_ReturnsPassword()
     {
         // Arrange
-        var pamProvider = new Keyfactor.Extensions.Pam.CyberArk.Conjur.CyberArkConjurPAM();
+        var pamProvider = new CyberArkConjurPAM();
 
         var instanceParameters = new Dictionary<string, string>
         {

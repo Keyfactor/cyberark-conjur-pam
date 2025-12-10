@@ -7,7 +7,7 @@ using Keyfactor.Platform.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Keyfactor.Extensions.Pam.CyberArk.Conjur;
+namespace Keyfactor.Extensions.Pam.CyberArk.Conjur.Providers;
 
 public class CyberArkConjurPAM: IPAMProvider
 {

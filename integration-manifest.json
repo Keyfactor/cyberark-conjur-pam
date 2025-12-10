@@ -41,10 +41,10 @@
             },
             {
               "Name": "ApiKey",
-              "DisplayName": "API Key",
+              "DisplayName": "API Key / Password",
               "DataType": 2,
               "InstanceLevel": false,
-              "Description": "The API key for the login"
+              "Description": "The API key or password for the login"
             },
             {
               "Name": "VariablePath",

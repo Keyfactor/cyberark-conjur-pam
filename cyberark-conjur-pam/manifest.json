@@ -3,7 +3,7 @@
     "Keyfactor.Platform.Extensions.IPAMProvider": {
       "PAMProviders.CyberArkConjur.PAMProvider": {
         "assemblyPath": "cyberark-conjur-pam.dll",
-        "TypeFullName": "Keyfactor.Extensions.Pam.CyberArk.Conjur.ProvidersCyberArkConjurPAM"
+        "TypeFullName": "Keyfactor.Extensions.Pam.CyberArk.Conjur.Providers.CyberArkConjurPAM"
       }
     }
   },
