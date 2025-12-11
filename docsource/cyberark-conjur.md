@@ -1,28 +1,43 @@
 ## Overview
 
-TODO Overview is a required section
+The CyberArk Conjur PAM retrieves secrets (variables) from CyberArkC onjur instances using either API keys or passwords for a given login identity.
 
 ## Requirements
 
-TODO Requirements is a required section
+### CyberArk Conjur
+- **Tested with**: CyberArk Conjur OSS v1.24 (latest as of writing)
+- **Minimum version**: CyberArk Conjur OSS v1.19.0
+- **Supported products**: Conjur Open Source, Conjur Enterprise
 
-## Extension Mechanics
+### Keyfactor Platform
+- **Minimum .NET Runtime**: .NET 8
+- **Keyfactor Command**: Version 12.0 or later
+- **Universal Orchestrator**: Version 12.3 or later
 
-TODO Extension Mechanics is an optional section. If this section doesn't seem necessary on initial glance, please delete it. Refer to the docs on [Confluence](https://keyfactor.atlassian.net/wiki/x/SAAyHg) for more info
+# Authentication and Authorization
 
-## Platform Install
+This integration currently only supports API Token / password authentication with Conjur.
 
-TODO Platform Install is an optional section. If this section doesn't seem necessary on initial glance, please delete it. Refer to the docs on [Confluence](https://keyfactor.atlassian.net/wiki/x/SAAyHg) for more info
+**Note**: Only Conjur user identities (created with `!user` in policies) support password authentication. Host identities (created with `!host`) **only** support API key authentication.
 
-## Orchestrator Install
+### Policy Requirements
 
-TODO Orchestrator Install is an optional section. If this section doesn't seem necessary on initial glance, please delete it. Refer to the docs on [Confluence](https://keyfactor.atlassian.net/wiki/x/SAAyHg) for more info
+In order to access CyberArk Conjur secrets via the API, the accessing identity ***must have*** at least the `execute` privileges on the secret resource.
 
-## Platform Usage
+Here is an example policy document that grants user `TestUser@local` the privileges to `execute` on the `local/MyTestVar` variable (secret). Note that `read` privileges are optional but not required:
 
-TODO Platform Usage is an optional section. If this section doesn't seem necessary on initial glance, please delete it. Refer to the docs on [Confluence](https://keyfactor.atlassian.net/wiki/x/SAAyHg) for more info
+```yaml
+- !policy
+  id: local
+  body:
+    # Define a human user, a non-human identity that represents an application, and a secret
+    - !user TestUser
+    # - !host myDemoApp
+    - !variable MyTestVar
 
-## Orchestrator Usage
-
-TODO Orchestrator Usage is an optional section. If this section doesn't seem necessary on initial glance, please delete it. Refer to the docs on [Confluence](https://keyfactor.atlassian.net/wiki/x/SAAyHg) for more info
-
+    # Give permission to the human user to execute on the secret
+    - !permit
+      role: !user TestUser
+      privileges: [ execute ]
+      resource: !variable MyTestVar
+```
