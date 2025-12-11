@@ -104,8 +104,8 @@ To install CyberArk Conjur PAM Provider, it is recommended you install [kfutil](
 Create the required PAM Types in the connected Command platform.
 
 ```shell
-# CyberArk Conjur
-kfutil pam types-create -r cyberark-conjur-pam -n CyberArk Conjur
+# CyberArk-Conjur
+kfutil pam types-create -r cyberark-conjur-pam -n CyberArk-Conjur
 ```
 
 ##### Using the API
@@ -114,7 +114,7 @@ For full API docs please visit our [product documentation](https://software.keyf
 Below is the payload to `POST` to the Keyfactor Command API
 ```json
 {
-    "Name": "CyberArk Conjur",
+    "Name": "CyberArk-Conjur",
     "Parameters": [
         {
             "Name": "ConjurUrl",
@@ -194,7 +194,7 @@ Below is the payload to `POST` to the Keyfactor Command API
 
 
 > [!NOTE]
-> Additional information on CyberArk Conjur can be found in the [supplemental documentation](docs/cyberark conjur.md).
+> Additional information on CyberArk-Conjur can be found in the [supplemental documentation](docs/cyberark-conjur.md).
 
 
 
