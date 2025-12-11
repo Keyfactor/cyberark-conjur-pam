@@ -29,52 +29,10 @@
   </a>
 </p>
 
-# CyberArk Conjur PAM Integration
-
 ## Overview
 The CyberArk Conjur PAM integration for Keyfactor enables secure retrieval of secrets (variables) from CyberArk Conjur instances. This integration allows Keyfactor Command and Universal Orchestrator to authenticate to Conjur and retrieve credentials on-demand for certificate management operations.
 
 This PAM integration can run on either Keyfactor Command or Universal Orchestrator.
-
-## Compatibility
-
-### CyberArk Conjur
-- **Tested with**: CyberArk Conjur OSS v1.24 (latest as of writing)
-- **Minimum version**: CyberArk Conjur OSS v1.19.0
-- **Supported products**: Conjur Open Source, Conjur Enterprise
-
-### Keyfactor Platform
-- **Minimum .NET Runtime**: .NET 8
-- **Keyfactor Command**: Version 12.0 or later
-- **Universal Orchestrator**: Version 12.3 or later
-
-## Authentication and Authorization
-
-This integration currently only supports API Token / password authentication with Conjur.
-
-**Note**: Only Conjur user identities (created with `!user` in policies) support password authentication. Host identities (created with `!host`) **only** support API key authentication.
-
-### Policy Requirements
-
-In order to access CyberArk Conjur secrets via the API, the accessing identity ***must have*** at least the `execute` privileges on the secret resource.
-
-Here is an example policy document that grants user `TestUser@local` the privileges to `execute` on the `local/MyTestVar` variable (secret). Note that `read` privileges are optional but not required:
-
-```yaml
-- !policy
-  id: local
-  body:
-    # Define a human user, a non-human identity that represents an application, and a secret
-    - !user TestUser
-    # - !host myDemoApp
-    - !variable MyTestVar
-
-    # Give permission to the human user to execute on the secret
-    - !permit
-      role: !user TestUser
-      privileges: [ execute ]
-      resource: !variable MyTestVar
-```
 
 ## Additional Support and Resources
 
@@ -117,7 +75,15 @@ To install CyberArk Conjur PAM Provider, it is recommended you install [kfutil](
 
 
 #### Requirements
-   TODO Requirements is a required section
+   ### CyberArk Conjur
+   - **Tested with**: CyberArk Conjur OSS v1.24 (latest as of writing)
+   - **Minimum version**: CyberArk Conjur OSS v1.19.0
+   - **Supported products**: Conjur Open Source, Conjur Enterprise
+
+   ### Keyfactor Platform
+   - **Minimum .NET Runtime**: .NET 8
+   - **Keyfactor Command**: Version 12.0 or later
+   - **Universal Orchestrator**: Version 12.3 or later
 
 #### Create PAM type in Keyfactor Command
 
@@ -180,13 +146,97 @@ Below is the payload to `POST` to the Keyfactor Command API
 #### Install PAM provider on Keyfactor Command Host (Local)
 
 
-("TODO Platform Install is an optional section. If this section doesn't seem necessary on initial glance, please delete it. Refer to the docs on [Confluence](https://keyfactor.atlassian.net/wiki/x/SAAyHg) for more info",)
+
+1. On the server that hosts Keyfactor Command, download and unzip the latest release of the CyberArk Conjur PAM Provider from the [Releases](../../releases) page.
+
+2. Copy the assemblies to the appropriate directories on the Keyfactor Command server:
+
+    <details><summary>Keyfactor Command 11+</summary>
+
+    1. Copy the unzipped assemblies to each of the following directories:
+
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebAgentServices\Extensions\cyberark-conjur-pam`
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebConsole\Extensions\cyberark-conjur-pam`
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\KeyfactorAPI\Extensions\cyberark-conjur-pam`
+
+    </details>
+
+    <details><summary>Keyfactor Command 10</summary>
+
+    1. Copy the assemblies to each of the following directories:
+    
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebAgentServices\bin\cyberark-conjur-pam`
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\KeyfactorAPI\bin\cyberark-conjur-pam`
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebConsole\bin\cyberark-conjur-pam`
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\Service\cyberark-conjur-pam`
+
+    2. Open a text editor on the Keyfactor Command server as an administrator and open the `web.config` file located in the `WebAgentServices` directory.
+
+    3. In the `web.config` file, locate the `<container> </container>` section and add the following registration:
+
+        ```xml
+        <container>
+            ...
+            <!--The following are PAM Provider registrations. Uncomment them to use them in the Keyfactor Product:-->
+            
+            <!--Add the following line exactly to register the PAM Provider-->
+            <register type="IPAMProvider" mapTo="Keyfactor.Extensions.Pam.CyberArk.Conjur, Keyfactor.Command.PAMProviders" name="CyberArk-Conjur" />
+        </container>
+        ```
+
+    4. Repeat steps 2 and 3 for each of the directories listed in step 1. The configuration files are located in the following paths by default:
+
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebAgentServices\web.config`
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\KeyfactorAPI\web.config`
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebConsole\web.config`
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\Service\CMSTimerService.exe.config`
+
+    </details>
+
+3. Restart the Keyfactor Command services (`iisreset`).
+
+
 
 
 #### Install PAM provider on a Universal Orchestrator Host (Remote)
 
 
-("TODO Orchestrator Install is an optional section. If this section doesn't seem necessary on initial glance, please delete it. Refer to the docs on [Confluence](https://keyfactor.atlassian.net/wiki/x/SAAyHg) for more info",)
+1. Install the CyberArk Conjur PAM Provider assemblies.
+
+    * **Using kfutil**: On the server that that hosts the Universal Orchestrator, run the following command:
+
+        ```shell
+        # Windows Server
+        kfutil orchestrator extension -e cyberark-conjur-pam@latest --out "C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions"
+
+        # Linux
+        kfutil orchestrator extension -e cyberark-conjur-pam@latest --out "/opt/keyfactor/orchestrator/extensions"
+        ```
+
+    * **Manually**: Download the latest release of the CyberArk Conjur PAM Provider from the [Releases](../../releases) page. Extract the contents of the archive to:
+
+        * **Windows Server**: `C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions\cyberark-conjur-pam`
+        * **Linux**: `/opt/keyfactor/orchestrator/extensions/cyberark-conjur-pam`
+
+2. Included in the release is a `manifest.json` file that contains the following object:
+    ```json
+
+    {
+        "Keyfactor:PAMProviders:CyberArk-Conjur:InitializationInfo": {
+            "ConjurUrl": "https://conjur.example.com",
+            "AccountId": "conjurAccount",
+            "Login": "conjurLogin",
+            "ApiKey": "apiKey"
+        }
+    }
+
+    ```
+
+    Populate the fields in this object with credentials and configuration data collected in the [requirements](docs/cyberark-conjur.md#requirements) section.
+
+3. Restart the Universal Orchestrator service.
+
+
 
 
 
@@ -204,13 +254,92 @@ Below is the payload to `POST` to the Keyfactor Command API
 #### From Keyfactor Command Host (Local)
 
 
-("TODO Platform Usage is an optional section. If this section doesn't seem necessary on initial glance, please delete it. Refer to the docs on [Confluence](https://keyfactor.atlassian.net/wiki/x/SAAyHg) for more info",)
+
+##### Define a PAM provider in Command
+1. In the Keyfactor Command Portal, hover over the ⚙️  (settings) icon in the top right corner of the screen and select **Priviledged Access Management**.
+
+2. Select the **Add** button to create a new PAM provider. Click the dropdown for **Provider Type** and select **CyberArk-Conjur**.
+
+> [!IMPORTANT]
+> If you're running Keyfactor Command 11+, make sure `Remote Provider` is unchecked.
+
+3. Populate the fields with the necessary information collected in the [requirements](docs/cyberark-conjur.md#requirements) section:
+
+| Initialization parameter | Display Name | Description |
+| --- | --- | --- |
+| ConjurUrl | Conjur URL | The URL of the Conjur server (e.g., https://conjur.example.com) |
+| AccountId | Account ID | The Conjur account identifier |
+| Login | Login | The login that will access the Conjur account and variable within the account. The login must have a policy with “read” and “execute” permissions on the target variable |
+| ApiKey | API Key / Password | The API key or password for the login |
+
+
+4. Click **Save**. The PAM provider is now available for use in Keyfactor Command.
+
+##### Using the PAM provider
+
+Now, when defining Certificate Stores (**Locations**->**Certificate Stores**), **CyberArk-Conjur** will be available as a PAM provider option. When defining new Certificate Stores, the secret parameter form will display tabs for **Load From Keyfactor Secrets** or **Load From PAM Provider**. 
+
+Select the **Load From PAM Provider** tab, choose the **CyberArk-Conjur** provider from the list of **Providers**, and populate the fields with the necessary information from the table below:
+
+| Instance parameter | Display Name | Description |
+| --- | --- | --- |
+| VariablePath | Variable (Secret) Path | The full path to the variable (secret) in Conjur (e.g., 'my-app/db-password' or 'production/api-keys/service-token') |
+
+
+
 
 
 #### From a Universal Orchestrator Host (Remote)
 
 
-("TODO Orchestrator Usage is an optional section. If this section doesn't seem necessary on initial glance, please delete it. Refer to the docs on [Confluence](https://keyfactor.atlassian.net/wiki/x/SAAyHg) for more info",)
+
+<details><summary>Keyfactor Command 11+</summary>
+
+##### Define a remote PAM provider in Command
+
+In Command 11 and greater, before using the CyberArk-Conjur PAM type, you must define a Remote PAM Provider in the Command portal.
+
+1. In the Keyfactor Command Portal, hover over the ⚙️  (settings) icon in the top right corner of the screen and select **Priviledged Access Management**.
+
+2. Select the **Add** button to create a new PAM provider.
+
+3. Make sure that `Remote Provider` is checked.
+
+4. Click the dropdown for **Provider Type** and select **CyberArk-Conjur**. 
+
+5. Give the provider a unique name.
+
+6. Click "Save".
+
+##### Using the PAM provider
+
+When defining Certificate Stores (**Locations**->**Certificate Stores**), **CyberArk-Conjur** can be used as a PAM provider. When defining a new Certificate Store, the secret parameter form will display tabs for **Load From Keyfactor Secrets** or **Load From PAM Provider**.
+
+Select the **Load From PAM Provider** tab, choose the **CyberArk-Conjur** provider from the list of **Providers**, and populate the fields with the necessary information from the table below:
+
+| Instance parameter | Display Name | Description |
+| --- | --- | --- |
+| VariablePath | Variable (Secret) Path | The full path to the variable (secret) in Conjur (e.g., 'my-app/db-password' or 'production/api-keys/service-token') |
+
+
+</details>
+
+<details><summary>Keyfactor Command 10</summary>
+
+When defining Certificate Stores (**Locations**->**Certificate Stores**), **CyberArk-Conjur** can be used as a PAM provider.
+
+When entering Secret fields, select the **Load From Keyfactor Secrets** tab, and populate the **Secret Value** field with the following JSON object:
+
+```json
+{"VariablePath": "The full path to the variable (secret) in Conjur (e.g., 'my-app/db-password' or 'production/api-keys/service-token')"}
+
+```
+
+> We recommend creating this JSON object in a text editor, and copying it into the Secret Value field.
+
+</details>
+
+
 
 
 
