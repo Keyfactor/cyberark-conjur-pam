@@ -1,18 +1,61 @@
 {
-  "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
+  "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
   "integration_type": "pam",
-  "name": "PAM Integration Template",
-  "status": "prototype",
-  "description": "This project is meant to be a template to quickly build a basic integration product build. Currently in dev, a work in progress,",
-  "support_level": "kf-community",
+  "name": "CyberArk Conjur PAM Provider",
+  "status": "production",
+  "description": "A Keyfactor PAM Provider plugin supporting credential retrieval from CyberArk Conjur.",
+  "support_level": "kf-supported",
   "link_github": false,
-  "update_catalog": false,
-  "release_dir": "UPDATE-THIS-WITH-PATH-TO-BINARY-BUILD-FOLDER",
+  "update_catalog": true,
+  "release_dir": "cyberark-conjur-pam/bin/Release",
   "about": {
     "pam": {
-      "assemblyName": "changeme.assemblyName",
-      "fullyQualifiedClassName": "changeme.fullyQualifiedClassName",
-      "dbName": "changeme.dbName"
+      "providerName": "CyberArk Conjur PAM Provider",
+      "assemblyName": "cyberark-conjur-pam",
+      "dbName": "CyberArk-Conjur",
+      "fullyQualifiedClassName": "Keyfactor.Extensions.Pam.CyberArk.Conjur",
+      "pam_types": {
+        "CyberArk-Conjur": {
+          "Name": "CyberArk-Conjur",
+          "Parameters": [
+            {
+              "Name": "ConjurUrl",
+              "DisplayName": "Conjur URL",
+              "DataType": 1,
+              "InstanceLevel": false,
+              "Description": "The URL of the Conjur server (e.g., https://conjur.example.com)"
+            },
+            {
+              "Name": "AccountId",
+              "DisplayName": "Account ID",
+              "DataType": 1,
+              "InstanceLevel": false,
+              "Description": "The Conjur account identifier"
+            },
+            {
+              "Name": "Login",
+              "DisplayName": "Login",
+              "DataType": 1,
+              "InstanceLevel": false,
+              "Description": "The login that will access the Conjur account and variable within the account. The login must have a policy with “read” and “execute” permissions on the target variable"
+            },
+            {
+              "Name": "ApiKey",
+              "DisplayName": "API Key / Password",
+              "DataType": 2,
+              "InstanceLevel": false,
+              "Description": "The API key or password for the login"
+            },
+            {
+              "Name": "VariablePath",
+              "DisplayName": "Variable (Secret) Path",
+              "DataType": 1,
+              "InstanceLevel": true,
+              "Description": "The full path to the variable (secret) in Conjur (e.g., 'my-app/db-password' or 'production/api-keys/service-token')"
+            }
+          ]
+        }
+      }
     }
   }
 }
