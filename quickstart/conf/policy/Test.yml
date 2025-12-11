@@ -7,10 +7,10 @@
     # - !host myDemoApp
     - !variable MyTestVar
 
-    # Give permission to the human user to read and execute the secret
+    # Give permission to the human user to execute on the secret
     - !permit
       role: !user TestUser
-      privileges: [ read, execute ]
+      privileges: [ execute ]
       resource: !variable MyTestVar
 
     # # Give permissions to the non-human identity to read and execute the secret the secret.
