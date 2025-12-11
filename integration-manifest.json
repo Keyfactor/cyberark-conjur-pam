@@ -16,7 +16,7 @@
       "fullyQualifiedClassName": "Keyfactor.Extensions.Pam.CyberArk.Conjur",
       "pam_types": {
         "CyberArk-Conjur": {
-          "Name": "CyberArk Conjur",
+          "Name": "CyberArk-Conjur",
           "Parameters": [
             {
               "Name": "ConjurUrl",

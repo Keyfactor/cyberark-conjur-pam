@@ -12,7 +12,7 @@ services:
     environment:
       DATABASE_URL: postgres://postgres@postgres/postgres
       CONJUR_DATA_KEY: "W0BhlISy0z14grAieW/swpWyaFIutWQTmZbI0wjuKLM="
-      RAILS_ENV: development
+      # RAILS_ENV: development # Remove this line to run in production mode, necessary if you want to use a reverse proxy tool like ngrok
     ports:
       - "8080:80"
     depends_on:

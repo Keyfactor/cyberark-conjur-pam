@@ -1,13 +1,13 @@
 {
   "extensions": {
     "Keyfactor.Platform.Extensions.IPAMProvider": {
-      "PAMProviders.CyberArkConjur.PAMProvider": {
+      "PAMProviders.CyberArk-Conjur.PAMProvider": {
         "assemblyPath": "cyberark-conjur-pam.dll",
         "TypeFullName": "Keyfactor.Extensions.Pam.CyberArk.Conjur.Providers.CyberArkConjurPAM"
       }
     }
   },
-  "Keyfactor:PAMProviders:CyberArkConjur:InitializationInfo": {
+  "Keyfactor:PAMProviders:CyberArk-Conjur:InitializationInfo": {
     "ConjurUrl": "https://conjur.example.com",
     "AccountId": "conjurAccount",
     "Login": "conjurLogin",
