@@ -1,0 +1,20 @@
+# Define a policy for our test resources
+- !policy
+  id: local
+  body:
+    # Define a human user, a non-human identity that represents an application, and a secret
+    - !user TestUser
+    # - !host myDemoApp
+    - !variable MyTestVar
+
+    # Give permission to the human user to execute on the secret
+    - !permit
+      role: !user TestUser
+      privileges: [ execute ]
+      resource: !variable MyTestVar
+
+    # # Give permissions to the non-human identity to read and execute the secret the secret.
+    # - !permit
+    #   role: !host myDemoApp
+    #   privileges: [ read, execute ]
+    #   resource: !variable MyTestVar
