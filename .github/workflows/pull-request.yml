@@ -1,0 +1,71 @@
+run-name: Build and Test Solution - ${{ github.sha }}
+name: Build and Test Solution
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+    build-and-test-solution:
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+            dotnet-version: [ '8.0.x' ]
+      steps:
+        - name: Checkout Code
+          uses: actions/checkout@v4
+
+        - name: Setup .NET 8
+          uses: actions/setup-dotnet@v4
+          with:
+            dotnet-version: '8.0.x'
+        
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
+        - name: Add Keyfactor NuGet Source
+          run: dotnet nuget add source https://nuget.pkg.github.com/Keyfactor/index.json -n github -u ${{ github.actor }} -p ${{ secrets.V2BUILDTOKEN }} --store-password-in-clear-text
+        
+        - name: Restore Dependencies
+          run: dotnet restore
+
+        - name: Build solution
+          run: dotnet build --no-restore --configuration Release
+
+        - name: Run Unit Tests
+          run: dotnet test --configuration Release --no-build --logger "console;verbosity=detailed" --filter "Category!=Integration"
+
+        # load the .env.ci file from the integrations test folder
+        - name: Load .env file
+          uses: xom9ikk/dotenv@v2
+          with:
+            path: ./cyberark-conjur-pam.IntegrationTests
+            mode: ci
+
+        # Pull Docker containers
+        - name: Start Conjur Docker Container
+          run: |
+            docker compose -f quickstart/docker-compose.yml pull
+          env:
+            BUILDKIT_INLINE_CACHE: 1
+
+        - name: Start Conjur Docker Container
+          run: |
+            docker compose -f quickstart/docker-compose.yml up -d
+        
+        # Verify that the API user can authenticate successfully
+        - name: Wait for Conjur API to become ready
+          uses: nick-fields/retry@v2
+          with:
+            timeout_minutes: 1
+            max_attempts: 12
+            retry_wait_seconds: 5
+            command: ./quickstart/scripts/check-user-password.sh 
+
+        - name: Run Integration Tests
+          run: dotnet test --configuration Release --no-build --logger "console;verbosity=detailed" --filter "Category=Integration"
+
+        - name: Stop Conjur Docker Container
+          if: always()
+          run: |
+            docker compose -f quickstart/docker-compose.yml down -v
