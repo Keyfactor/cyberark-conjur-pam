@@ -1,6 +1,6 @@
 ## CyberArk-Conjur
 
-The CyberArk Conjur PAM retrieves secrets (variables) from CyberArkC onjur instances using either API keys or passwords for a given login identity.
+The CyberArk Conjur PAM retrieves secrets (variables) from CyberArk Conjur instances using either API keys or passwords for a given login identity.
 
 ## Requirements
 

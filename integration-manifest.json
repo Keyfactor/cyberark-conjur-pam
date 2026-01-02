@@ -5,9 +5,9 @@
   "status": "production",
   "description": "A Keyfactor PAM Provider plugin supporting credential retrieval from CyberArk Conjur.",
   "support_level": "kf-supported",
-  "link_github": false,
+  "link_github": true,
   "update_catalog": true,
-  "release_dir": "cyberark-conjur-pam/bin/Release",
+  "release_dir": "cyberark-conjur-pam/bin/Release/net8.0",
   "about": {
     "pam": {
       "providerName": "CyberArk Conjur PAM Provider",
