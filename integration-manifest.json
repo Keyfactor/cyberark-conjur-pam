@@ -8,6 +8,7 @@
   "link_github": true,
   "update_catalog": true,
   "release_dir": "cyberark-conjur-pam/bin/Release/net8.0",
+  "release_project": "cyberark-conjur-pam/cyberark-conjur-pam.csproj",
   "about": {
     "pam": {
       "providerName": "CyberArk Conjur PAM Provider",
