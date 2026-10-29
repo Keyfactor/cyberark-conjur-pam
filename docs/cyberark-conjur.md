@@ -13,6 +13,3 @@ The CyberArk Conjur PAM retrieves secrets (variables) from CyberArk Conjur insta
 - **Minimum .NET Runtime**: .NET 8
 - **Keyfactor Command**: Version 12.0 or later
 - **Universal Orchestrator**: Version 12.3 or later
-
-
-
